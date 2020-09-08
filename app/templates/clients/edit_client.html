@@ -1,0 +1,32 @@
+<!-- edit client.html -->
+{% extends 'project_layout.html' %}
+
+{% block content %}
+
+<div id="container-fluid" class="container-fluid">
+    {% if client is defined %}
+    <div class="row">
+        <div class="col" style="max-width: 22em;">
+            {% include 'clients/client_card.html' %}
+        </div>
+        <div class="col">
+            <div id="client_assets" class="box bordered" style="max-height: 30em; width: 22em; max-width: 22em; overflow: scroll;"></div>
+        </div>
+        <div class="col">
+            <div id="assets" class="box bordered" style="max-height: 30em; width: 22em; max-width: 22em; overflow: scroll;"></div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    $(document).ready(function () 
+    {    
+        project_id = "{{ project.id }}";
+        client_id = "{{ client.id }}";
+        assets(project_id);
+        client_assets(client_id);
+    });
+</script>
+
+{% endblock %}

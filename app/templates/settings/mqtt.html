@@ -1,0 +1,147 @@
+<!-- mqtt.html -->
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="card text-white bg-dark mb-3">
+                {% if form is defined and mqtt_settings is defined %}
+                <form id="settings" action="/mqtt/settings" method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    <div class="card-header">Configuración del servidor de MQTT</div>
+                    <div class="card-body" style="min-height: 26em;">
+                        <!-- Nav pills -->
+                        <ul class="nav nav-pills">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="pill" href="#general">General</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="pill" href="#ssl-tls">SSL/TLS</a>
+                            </li>
+                        </ul><br>
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div class="tab-pane container active" id="general">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-5">
+                                            <div class="form-group row">
+                                                {{ form.client_id.label(class_="col-5") }}
+                                                {{ form.client_id(class_="form-control col-7", value=mqtt_settings['MQTT_CLIENT_ID']) }}
+                                            </div>
+                                            <div class="form-group row">
+                                                {{ form.broker_address.label(class_="col-5") }}
+                                                {{ form.broker_address(class_="form-control col-7", value=mqtt_settings['MQTT_BROKER_ADDRESS']) }}
+                                                {% for error in form.broker_address.errors %}
+                                                <span style="color: red;">{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            <div class="form-group row">
+                                                {{ form.broker_port.label(class_="col-5") }}
+                                                {{ form.broker_port(class_="form-control col-7", value=mqtt_settings['MQTT_BROKER_PORT']) }}
+                                                {% for error in form.broker_port.errors %}
+                                                <span style="color: red;">{{ error }}</span>
+                                                {% endfor %}
+                                            </div><br>
+                                            <div class="custom-control custom-switch">
+                                                <input id="protected" type="checkbox" class="custom-control-input" data-toggle="modal" data-target="#CredentialsModal">
+                                                <label for="protected" class="custom-control-label">Protegido con contraseña</label>
+                                            </div><br>
+                                            <div class="custom-control custom-switch">
+                                                {{ form.start_on_launch(class_="custom-control-input", checked=(mqtt_settings["MQTT_START_ON_LAUNCH"] == "1")) }}
+                                                {{ form.start_on_launch.label(class_="custom-control-label") }}
+                                            </div>
+                                        </div>
+                                        <div class="col-6 offset-1">
+                                            <div class="form-group row">
+                                                {{ form.connection_timeout.label(class_="col-10", style="max-width: 16em;") }}
+                                                {{ form.connection_timeout(class_="form-control col-2", value=mqtt_settings['MQTT_CONNECTION_TIMEOUT']) }}
+                                            </div>
+                                            <div class="form-group row">
+                                                {{ form.keep_alive_interval.label(class_="col-10", style="max-width: 16em;") }}
+                                                {{ form.keep_alive_interval(class_="form-control col-2", value=mqtt_settings['MQTT_KEEP_ALIVE_INTERVAL']) }}
+                                            </div><br>
+                                            <div class="custom-control custom-switch">
+                                                {{ form.clean_session(class_="custom-control-input", checked=(mqtt_settings["MQTT_CLEAN_SESSION"] == "1")) }}
+                                                {{ form.clean_session.label(class_="custom-control-label") }}
+                                            </div><br>
+                                            <div class="custom-control custom-switch">
+                                                {{ form.auto_reconnect(class_="custom-control-input", checked=(mqtt_settings["MQTT_AUTO_RECONNECT"] == "1")) }}
+                                                {{ form.auto_reconnect.label(class_="custom-control-label") }}
+                                            </div><br>
+                                            <div class="form-group row">
+                                                {{ form.version.label(class_="col-10", style="max-width: 10em;") }}
+                                                {{ form.version(class_="form-control col-2", value=mqtt_settings['MQTT_VERSION'], disabled=True) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane container fade" id="ssl-tls">
+                                <div class="container">
+                                    <div class="custom-control custom-switch">
+                                        {{ form.secure(class_="custom-control-input", checked=(mqtt_settings["MQTT_SSL/TLS"] == "1")) }}
+                                        {{ form.secure.label(class_="custom-control-label") }}
+                                    </div><br>
+                                    <div class="form-group row">
+                                        {{ form.tls_protocol.label(class_="col-9", style="max-width: 9em;") }}
+                                        {{ form.tls_protocol(class_="form-control col-3", value=mqtt_settings["MQTT_TLS_PROTOCOL"]) }}
+                                    </div><br>
+                                    <div class="custom-file">
+                                        {{ form.ca_file_path(class_="custom-file-input")}}
+                                        <label class="custom-file-label" for="ca_file_path">Archivo de certificado CA</label>
+                                        <div class="invalid-feedback">Debes seleccionar un archivo</div>
+                                    </div><br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>            
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-primary" onclick="ActivateMQTT(1)">
+                            <strong>Conectar</strong>
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="ActivateMQTT(0)">
+                            <strong>Desconectar</strong>
+                        </button>
+                        <button type="submit" class="btn btn-primary" style="position: relative; float: right;">
+                            <strong>Aplicar</strong>
+                        </button>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MQTT Credentials Modal -->
+<div class="modal fade" id="CredentialsModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Credenciales de MQTT.</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div id="credentials"></div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/mqtt/mqtt.js') }}"></script>
+<script>
+    $(document).ready(function()
+    {
+        getCredentialsForm();
+
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function() {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+{% if assets is defined and assets | length > 0 %}
+<table class="table table-bordered" id="clientTable">
+    <thead class="thead-dark">
+        <tr>
+            <th>Nombre</th>
+            <th style="min-width: 180px;">Comienza Día | Hora</th>
+            <th style="min-width: 180px;">Termina Día | Hora</th>
+            <th>Duración</th>
+            <th>Estado</th>
+            <th>Opciones</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for asset in assets %}
+    <tr id="{{ asset.asset_id }}">
+        <td>{{ asset.name }}</td>
+        <td>{{ asset.start_date | Date }} | {{ asset.start_date | Time }}</td>
+        <td>{{ asset.end_date | Date }} | {{ asset.end_date | Time }}</td>
+        {% if asset.duration %}
+        <td> {{ asset.duration }} segs</td>
+        {% else %}
+        <td>Video</td>
+        {% endif %}
+        {% if asset.is_enabled == 1 %}
+        <td><span class="badge badge-success">habilitado</span></td>
+        {% else %}
+        <td><span class="badge badge-danger">desabilitado</span></td>
+        {% endif %}
+        <td>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-block btn-secondary" onclick="controlAsset('{{client.id}}', 'asset', '{{asset.asset_id}}')"><i class="fa fa-play"></i></button>
+                <a href="/assets/update/{{client.id}}/{{asset.asset_id}}" class="btn btn-secondary"><i class="fa fa-pencil"></i></a>
+                <button type="button" class="btn btn-secondary" onclick="delClientAsset2('{{client.id}}', '{{asset.asset_id}}')"><i class="fa fa-trash-o"></i></button>
+                <button type="button" class="btn btn-secondary" onclick="enableAsset('{{client.id}}', '{{asset.asset_id}}')"><i class="fa fa-power-off"></i></button>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% elif offline == 1 %}
+<div class="jumbotron border border-secondary bg-dark text-light">
+    <h1 class="display-4">Screenly OSE Monitor</h1><br>
+    <p class="lead text-light bg-dark">
+        Este cliente está desconectado.            
+    </p><br>
+</div>
+{% else %}
+<div class="jumbotron border border-secondary bg-dark text-light">
+    <h1 class="display-4">Screenly OSE Monitor</h1><br>
+    <p class="lead text-light bg-dark">
+        Este cliente no posee ningun asset.                
+    </p><br>
+    <a class="btn btn-primary btn-lg btn-block" href="/clients/edit/{{client.id}}" role="button"><strong>Agregue algunos.</strong></a>
+</div>
+{% endif %}

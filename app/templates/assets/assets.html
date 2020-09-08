@@ -1,0 +1,33 @@
+<!-- assets.html -->
+{% extends 'project_layout.html' %}
+
+{% block content %}
+<div class="container">
+    {% if project is defined %}
+    <div class="row">
+    {% for asset in project.assets %}
+    <div class="col-md-6 col-xs-12">
+        <div class="card border-secondary bg-dark text-light" style="width: 30em; height: 30em; margin-bottom: 8px;">
+            <div class="card-body">
+                <div id="media" alt="Card image cap" style="width: 100%; height: 100%;">
+                    {% if asset.is_image() %}
+                    <img class="card-img-top" src="{{url_for('static', filename='uploads/'+asset.filename)}}" style="height: 100%;"/>
+                    {% elif asset.is_video() %}
+                    <video style="width: 100%; height: auto;" controls>
+                        <source src="{{url_for('static', filename='uploads/'+asset.filename)}}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    {% endif %}
+                </div>                
+            </div>
+            <div class="card-footer">
+                <a href="/assets/{{ asset.id }}" class="btn btn-success">Ver <i class="fa fa-eye"></i></a>
+                <button type="button" class="btn btn-danger" onclick="delAsset('{{ asset.id }}')">Eliminar <i class="fa fa-trash-o"></i></button>
+            </div>
+        </div><br>
+    </div>
+    {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

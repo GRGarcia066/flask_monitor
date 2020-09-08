@@ -1,0 +1,46 @@
+<!-- clients.html -->
+{% extends 'project_layout.html' %}
+
+{% block content %}
+<div class="container">
+    {% if project is defined %}
+    <div id="clients-deck" class="row">
+        {% for client in project.clients %}
+        <div id="client-{{client.id}}" class="col-md-4" style="padding-bottom: 25px;">
+            <div class="card p-1 border-secondary bg-dark text-light" style="width: 20em;">
+                <div id="screenshot" style="height: 15em;">
+                    <img id="img-{{client.id}}" class="card-img-top" src="{{url_for('static', filename='img/no-image-available.jpg')}}" style="height: 100%;" alt="Card image cap"/>
+                </div>             
+                <div class="card-body">
+                    <p>
+                        {{ client.name }}
+                        <span id="client-{{client.id}}-status" class="badge badge-warning text-light">
+                            conectando
+                        </span>
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a href="/clients/{{client.id}}" class="btn btn-lg btn-success">Ver <i class="fa fa-eye"></i></a>
+                    <button type="button" class="btn btn-lg btn-danger" onclick="delClient('{{client.id}}')">Eliminar <i class="fa fa-trash-o"></i></button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+$(document).ready(function () 
+{
+    let clients = $('#clients-deck');
+    let childrens = clients.children();
+    check_timer = 5000;
+    
+    {% for client in project.clients %}
+        setTimeout(getScreenshot, 0, {{ client.id }});
+    {% endfor %}
+});
+</script>
+
+{% endblock %}

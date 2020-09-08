@@ -1,0 +1,80 @@
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">Screenly Monitor</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+        aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+            {% if current_user.is_anonymous %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('auth.login') }}">Entrar</a>
+            </li>
+            {% else %} 
+            {% if project is defined %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Clientes
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/projects/{{ project.name }}/clients">Clientes</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Assets
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/projects/{{ project.name }}/assets">Assets</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Categorías
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/projects/{{ project.name }}/categories">Categorías</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    MQTT
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{{ url_for('mqtt.settings') }}">Configuración</a>
+                    <a class="dropdown-item" href="/projects/{{ project.name }}/topics">Tópicos</a>
+                    <a class="dropdown-item" href="/projects/{{ project.name }}/subscriptions">Suscripciones</a>
+                    <a class="dropdown-item" href="/subscriptions/new/{{ project.id }}">Crear Suscripción</a>
+                </div>
+            </li>
+            {% else %}                
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Proyectos
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/projects">Proyectos</a>
+                </div>
+            </li>
+            {% endif %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Administrar
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{{ url_for('auth.profile', username=current_user.username) }}">Perfil</a>
+                    <a class="dropdown-item" href="{{ url_for('auth.register') }}">Registrar usuario</a>
+                    <a class="dropdown-item" href="{{ url_for('auth.logout') }}">Salir</a>
+                </div>
+            </li>
+            {% endif %}
+        </ul>
+        <ul class="navbar-nav navbar-right">
+            <li class="nav-item">
+                <a class="navbar-brand" href="/projects/{{ project.name }}" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <strong>Proyecto {{ project.name }}</strong>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

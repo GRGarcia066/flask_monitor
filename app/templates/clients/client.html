@@ -1,0 +1,18 @@
+<!-- client.html -->
+{% extends 'project_layout.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    {% if client is defined %}
+    <div class="row">
+        <div class="col-3" style="max-width: 22em;">
+           {% include 'clients/client_card.html' %}
+        </div>
+        <div id="assets_table" class="col-9">
+            {% include 'clients/assets_table.html' %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,307 @@
+<!-- new_subscription.html -->
+{% extends 'project_layout.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            {% if form is defined and project is defined %}
+            <form action="/subscriptions/new/{{ project.id }}" method=post>
+                {{ form.hidden_tag() }}
+                <div class="step_one">
+                    <h3>Crear Suscripción Paso 1:</h3>
+                    <p style="font-size: 24px;">Seleccione el tópico al que desea suscribirse.</p>
+                </div>
+                <div class="step_two" style="display: none">
+                    <h3>Crear Suscripción Paso 2:</h3>
+                    <p style="font-size: 24px;">Seleccione la acción a realizar.</p>
+                </div>
+                <div class="step_three" style="display: none">
+                    <h3>Crear Suscripción Paso 3</h3>
+                    <p style="font-size: 24px;">Seleccione los clientes a suscribir.</p>
+                </div>
+                {% if project.topics %}
+                <div class="step_one step_two step_three">
+                    <div class="form-group">
+                        {{ form.topic.label }}
+                        {{ form.topic(class_="form-control", style="width: 100%;", placeholder=project.name+"/#") }}        
+                        {% for error in form.topic.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="step_one">
+                    <div class="chart" id="tree-simple" style="max-height: 22em;"></div><br>
+                </div>
+                {% endif %}
+                <div id="action_select" class="step_two step_three" style="display: none">
+                    <div class="form-group">
+                        {{ form.name.label }}
+                        {{ form.name(class_="form-control", style="width: 100%", onchange="HandleOnChange()") }}
+                        {% for error in form.name.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div id="extra_param_1" class="form-group" style="display: none">
+                        {{ form.extra_param_1.label }}
+                        {{ form.extra_param_1(class_="form-control selectpicker", style="width: 100%") }}
+                        {% for error in form.extra_param_1.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="extra_param_2 form-group" style="display: none">
+                        {{ form.extra_param_2.label }}
+                        {{ form.extra_param_2(class_="form-control", style="width: 100%") }}
+                        {% for error in form.extra_param_2.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="extra_param_3 form-group" style="display: none">
+                        {{ form.extra_param_3.label }}
+                        {{ form.extra_param_3(class_="form-control", value=0) }}
+                        {% for error in form.extra_param_3.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="step_two" style="display: none">
+                    <div class="form-group">
+                        {{ form.operator.label }}
+                        {{ form.operator(class_="form-control") }}
+                        {% for error in form.operator.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.value.label }}
+                        {{ form.value(class_="form-control") }}
+                        {% for error in form.value.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="step_one">
+                    <button type="button" class="btn btn-secondary" onclick="HideTreeShowAction(true)">Siguiente</button>
+                </div>
+                <div class="step_two" style="display: none">
+                    <button type="button" class="btn btn-secondary" onclick="HideTreeShowAction(false)">Anterior</button>
+                    <button type="button" class="btn btn-secondary" onclick="HideActionShowClients(true)">Siguiente</button>
+                </div><br>
+                <div class="step_three" style="display: none">
+                    <div class="form-group">
+                        {{ form.clients.label() }}
+                        {% for client in form.clients %}
+                        <div class="custom-control custom-switch">
+                            {{ client(class="custom-control-input") }}
+                            {{ client.label(class="custom-control-label") }}
+                        </div>
+                        {% endfor %}
+                        {% for error in form.clients.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="HideActionShowClients(false)">Anterior</button>
+                    {{ form.submit(class_="btn btn-primary") }}
+                </div>
+            </form>
+            {% endif %}
+        </div>
+        <div class="extra_param_2 col box" style="display: none; max-width: 20em; max-height: 30em; overflow: scroll;">
+            {% if project is defined %}
+            {% for asset in project.assets %}
+            <div class="card p-2 border-secondary bg-dark text-light" style="max-width: 16em; max-height: 16em;">
+                <div class="card-body">
+                    {% if asset.is_image() %}
+                    <img class="card-img-top" src="{{url_for('static', filename='uploads/'+asset.filename)}}"  style="width: 100%; height: auto;" alt="Card image cap"/>
+                    {% elif asset.is_video() %}
+                    <video style="width: 100%; height: auto;" controls>
+                        <source src="{{url_for('static', filename='uploads/'+asset.filename)}}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    {% endif %}            
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary" onclick="SelectAsset('{{ asset.id }}')">Seleccionar</button>
+                </div>
+            </div><br>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+
+<script src="{{ url_for('static', filename='js/topics/topic_tree.js') }}"></script>
+
+<script>
+    
+    function HideTreeShowAction(next)
+    {
+        if (next)
+        {
+            $(".step_one").hide();
+            $(".step_two").show();
+            //$("input#topic").attr("disabled", true);
+        }
+        else
+        {
+            $(".step_two").hide();
+            $(".step_one").show();
+            //$("input#topic").attr("disabled", false);
+        }
+    }
+
+    function HideActionShowClients(next)
+    {
+        if (next)
+        {
+            $(".step_two").hide();
+            $(".step_three").show();
+            //$("select#name").attr("disabled", true);
+        }
+        else
+        {
+            $(".step_three").hide();
+            $(".step_two").show();
+            //$("select#name").attr("disabled", false);
+        }
+    }
+
+    function SelectAsset(asset_id)
+    {
+        let input = $("input#extra_param_2")[0];
+        input.value = asset_id;
+    }
+
+    function HandleOnChange()
+    {
+        let select = $("select#name")[0];
+        let selectedOptions = select.selectedOptions[0];
+        let value = selectedOptions.value;
+
+        let extra_param_1 = $("div#extra_param_1");
+        let extra_param_2 = $("div.extra_param_2");
+        let extra_param_3 = $("div.extra_param_3");
+
+        switch(value) 
+        {
+            case "Siguiente":
+            case "Anterior":
+                extra_param_1.hide();
+                extra_param_2.hide();
+                extra_param_3.hide();
+                break;
+
+            case "Reproducir Asset":
+                extra_param_1.hide();
+                extra_param_3.hide();
+                extra_param_2.show();
+                break;
+
+            case "Reproducir Categoría":
+                extra_param_2.hide();
+                extra_param_3.hide();
+                extra_param_1.show();
+                break;
+
+            case "Apagar/Encender":
+                extra_param_1.hide();
+                extra_param_2.hide();
+                extra_param_3.show();
+                break;
+        }
+    };
+
+    $(document).ready(function () 
+    {
+        $('.selectpicker').select2();
+
+        var project_id = "{{ project.id }}";
+        GetTopicsStructure(project_id).done(function(data)
+        {
+            var topics = data.topics;
+            if (topics.length <= 0)
+                return;
+
+            var config = 
+            {
+                container: "#tree-simple",
+                hideRootNode: true,
+                levelSeparation: 30,
+                siblingSeparation: 25,
+                subTeeSeparation: 25,
+                connectors: {
+                    type: "step",
+                    style: {
+                        "stroke-width": 2,
+                        'arrow-end': 'block-wide-long'
+                    }
+                }
+            },
+
+            root = {},
+
+            chart_config = 
+            [
+                config,
+                root,
+            ];
+                    var dict = {};
+            var texts_dict = {};
+
+            for (var item in topics)
+            {
+                let topic = topics[item];
+                let node = 
+                {
+                    parent: root,
+                    text: 
+                    { 
+                        name: topic.name,                
+                    },
+                    HTMLid: "node-" + topic.id
+                };
+
+                texts_dict[topic.id] = topic.text;
+                dict[topic.id] = node             
+            }
+
+            for (var item in topics)
+            {
+                let topic = topics[item];
+                let node = dict[topic.id]
+
+                if (dict[topic.parent])
+                    node.parent = dict[topic.parent]
+
+                chart_config.push(node)
+            }
+
+            var my_chart = new Treant(chart_config);
+
+            nodes = $("div.node");
+
+            for (i = 0; i < nodes.length; i++)
+            {
+                let node = nodes[i]; 
+                let node_id = node.id.replace("node-", "");  
+
+                let node_object = dict[node_id];
+                let node_text = texts_dict[node_id];
+
+                node.classList.add("btn");
+                node.onclick = function(e) 
+                {
+                    let topic_input = $("input#topic")[0];
+                    if (node_object.children == null)
+                        topic_input.value = node_text;
+                    else
+                        topic_input.value = node_text + "/#";
+                };
+            }
+        });
+    });
+</script>
+
+{% endblock %}

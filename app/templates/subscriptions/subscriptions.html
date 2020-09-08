@@ -1,0 +1,152 @@
+<!-- subscriptions.html -->
+{% extends 'project_layout.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <table id="subscription_table" class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Tópico</th>
+                    <th>Acción</th>
+                    <th>Operación</th>
+                    <th>Cliente(s)</th>
+                    <th>Estado</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% if project is defined %}
+            {% for subscription in project.subscriptions %}        
+                {% for action in subscription.actions %}
+                <tr>
+                    <td>{{ subscription.topic }}</td>
+                    <td>         
+                        {% if action.name == "Apagar/Encender" %}
+                            {% if action.extra_param_3 == "1" %}
+                                Encender
+                            {% else %}
+                                Apagar
+                            {% endif %}
+                        {% else %}
+                            {{ action.name }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ action.operator }}
+                        {% if action.operator != "Contiene" and action.operator != "Igual" %}
+                            que 
+                        {% else %}
+                            a
+                        {% endif %}
+                        {{ action.value }}
+                    </td>
+                    <td>
+                        {% for client in action.clients %}          
+                            {{ client }}{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% if subscription.status == 1 %}
+                            <span class="badge badge-success">Habilitada</span>
+                        {% else %}
+                            <span class="badge badge-danger">Desabilitada</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group mr-2" role="group" aria-label="Basic example">
+                            <button type="button" class="btn btn-secondary" onclick="activateSubscription({{ subscription.id }}, -1)"><i class="fa fa-power-off"></i></button>
+                            <button type="button" class="btn btn-secondary" onclick="delSubscriptions({{ subscription.id }}, {{ action.id  }})"><i class="fa fa-trash-o"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="btn-group mr-2" role="group">
+            <a class="btn btn-secondary text-white" href="/subscriptions/new/{{ project.id }}">Agregar Suscripción</a>
+        </div>
+        <div class="btn-group mr-2" role="group">
+            <a class="btn btn-secondary text-white" onclick="load_subscriptions()">Activar Suscripciones</a>
+        </div>
+        <div class="btn-group mr-2" role="group">
+            <a class="btn btn-secondary text-white" onclick="unload_subscriptions()">Desactivar Suscripciones</a>
+        </div>
+    </div><br>
+</div><br>
+
+<script>
+    function load_subscriptions()
+    {
+        $.post({
+            url: "/mqtt/controls/1/{{ project.id }}",
+            success: function(data) {
+                alertify.success('Se han agregado con éxito las suscripciones de la lista.');
+                console.log(data);
+            },
+            error: function(data){
+                alertify.error(data.responseText);
+                console.log(data);
+            }
+        })
+    };
+
+    function unload_subscriptions()
+    {
+        $.post({
+            url: "/mqtt/controls/0/{{ project.id }}",
+            success: function(data) {
+                alertify.success('Se han eliminado con éxito las suscripciones de la lista.');
+                console.log(data);
+            },
+            error: function(data){
+                    alertify.error(data.responseText); 
+                console.log(data);
+            }
+        })
+    };
+
+    function delSubscriptions(subscription_id, action_id) 
+    {
+        alertify.confirm('Eliminar', '¿Está seguro de que desea eliminarlo?', 
+
+        function() { 
+            $.ajax({
+                url: '/subscriptions/'+ subscription_id + '/' + action_id,
+                type: 'DELETE',
+                success: function (data) {
+                    window.location.reload();
+                },
+                error: function (data) {
+                    alertify.error(data.responseText);
+                    console.log(data);
+                }
+            });
+        },
+        function() {});
+    }
+
+    function activateSubscription(subscription_id, status)
+    {
+        $.post({
+                url: '/subscriptions/edit/'+ subscription_id,
+                data: { 
+                    status: status
+                },
+                success: function () {
+                    window.location.reload();
+                },
+                error: function (data) {
+                    alertify.error(data.responseText);
+                    console.log(data);
+                }
+            });
+    }
+</script>
+
+{% endblock %}

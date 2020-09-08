@@ -1,0 +1,42 @@
+<!-- login.html -->
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="limiter">
+    <div class="container-login100">
+        <div class="wrap-login100 p-t-50 p-b-90">
+            <form class="login100-form validate-form flex-sb flex-w" action="/auth/login" method="POST">
+                <span class="login100-form-title p-b-51">
+                    Login
+                </span>
+                {% if form is defined %}
+                {{ form.hidden_tag() }}
+                <div class="wrap-input100 validate-input m-b-16" data-validate = "Username is required">
+                    {{ form.username(class_="input100", placeholder="Nombre de usuario") }}
+                    <span class="focus-input100"></span>
+                    {% for error in form.username.errors %}
+                    <span style="color: red;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="wrap-input100 validate-input m-b-16" data-validate = "Password is required">
+                    {{ form.password(class_="input100", placeholder="Contraseña") }}
+                    <span class="focus-input100"></span>
+                    {% for error in form.password.errors %}
+                    <span style="color: red;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="flex-sb-m w-full p-t-3 p-b-24">
+                    <div class="contact100-form-checkbox">
+                    {{ form.remember_me(class_="input-checkbox100", id="ckb1") }} 
+                    {{ form.remember_me.label(class_="label-checkbox100", for="ckb1") }}
+                    </div>
+                </div>
+                <div class="container-login100-form-btn m-t-17">
+                    {{ form.submit(class_="login100-form-btn") }}
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+<!-- new_category.html -->
+{% if form is defined %}
+<form id="category_form" action="#" method=post>             
+  <div class="modal-body">
+      <div class="form-group">
+      {{ form.name(class_="form-control", placeholder="Nombre") }}
+      {% for error in form.name.errors %}
+      <span style="color: red;">{{ error }}</span>
+      {% endfor %}
+      </div>
+  </div>
+  <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+      {{ form.submit(class_="btn btn-primary") }}
+  </div>
+</form>
+{% endif %}
+
+<script>
+    function OnSubmit(e) 
+    {
+        $.post({
+            url: "/categories/new/{{ project.id }}",
+            data: $(this).serialize(), // serializes the form's elements.
+        
+            success: function (data) {
+                console.log("Success");
+                window.location.reload();
+            },
+            error: function(data) {
+                console.log("Error");
+                $("#cat_form_content").html(data.responseText);
+            }
+        });
+        e.preventDefault(); // block the traditional submission of the form.
+    };
+
+    $(document).ready(function () 
+    {
+        var form = $("#category_form")[0];
+        form.onsubmit = OnSubmit;
+    });
+</script>

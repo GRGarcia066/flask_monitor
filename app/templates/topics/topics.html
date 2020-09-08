@@ -1,0 +1,133 @@
+<!-- topics.html -->
+{% extends 'project_layout.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+    {% if project is defined %}
+    {% if project.topics%}
+    <div class="chart border border-secundary" id="tree-simple" style="min-height: 30em;"></div>
+    {% endif %}
+    {% endif %}
+</div>
+
+<!-- Create Topic Modal -->
+<div class="modal fade" id="CreateTopicModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div id="topic-form" class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Agregar Tópico.</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div id="topic_form_content"></div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/topics/topic_tree.js') }}"></script>
+
+<script>
+
+$(document).ready(function() 
+{
+    var project_id = "{{ project.id }}";
+    
+    getTopicForm(project_id, "#topic_form_content");
+    GetTopicsStructure(project_id).done(function(data)
+    {
+        var topics = data.topics;
+        if (topics.length <= 0)
+            return;
+
+        var config = 
+        {
+            container: "#tree-simple",
+            hideRootNode: true,
+            levelSeparation: 100,
+            siblingSeparation: 75,
+            subTeeSeparation: 75,
+            connectors: {
+                type: "step",
+                style: {
+                    "stroke-width": 2,
+                    'arrow-end': 'block-wide-long'
+                }
+            }
+        },
+
+        root = {},
+
+        chart_config = 
+        [
+            config,
+            root,
+        ];
+    
+        var dict = {}
+
+        for (var item in topics)
+        {
+            let topic = topics[item];
+            let node = 
+            {
+                parent: root,
+                text: 
+                { 
+                    name: topic.name,                
+                },
+                HTMLid: "node-" + topic.id
+            };
+
+            dict[topic.id] = node             
+        }
+
+        for (var item in topics)
+        {
+            let topic = topics[item];
+            let node = dict[topic.id]
+
+            if (dict[topic.parent])
+                node.parent = dict[topic.parent]
+
+            chart_config.push(node)
+        }
+
+        var my_chart = new Treant(chart_config);
+
+        var nodes = $("div.node");
+
+        for (i = 0; i < nodes.length; i++)
+        {
+            let node = nodes[i];
+            let node_id = node.id.replace("node-", "");
+
+            var btn_add = document.createElement("button");
+            btn_add.type = "button";
+            btn_add.innerHTML = '<i class="fa fa-plus"></i>';
+            btn_add.dataset.toggle = "modal";
+            btn_add.dataset.target = "#CreateTopicModal";
+            btn_add.classList.add("btn");
+            btn_add.classList.add("btn-xs");
+            btn_add.classList.add("btn-primary");
+            btn_add.onclick = function(e) { $("input#parent")[0].value = node_id; };
+            nodes[i].appendChild(btn_add);
+
+            if (node.data.treenode.parentId == 0)
+                continue;
+            
+            var btn_del = document.createElement("button");
+            btn_del.type = "button";
+            btn_del.innerHTML = '<i class="fa fa-trash-o"></i>';
+            btn_del.classList.add("btn");
+            btn_del.classList.add("btn-xs");
+            btn_del.classList.add("btn-danger");
+            btn_del.onclick = function(e) { delTopic(node_id); };       
+            nodes[i].appendChild(btn_del);
+        }
+    });
+});
+</script>
+
+{% endblock %}

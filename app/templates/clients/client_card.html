@@ -1,0 +1,99 @@
+<!-- client_card.html -->
+{% if client is defined and offline is defined %}
+<div id="client-{{client.name}}" class="card p-2 border-secondary bg-dark text-light">
+    <img id="img-{{client.id}}" class="card-img-top" src="{{url_for('static', filename='img/no-image-available.jpg')}}" alt="Card image cap"/>
+    <div class="btn-group" style="width: 100%;" role="group">
+        <button type="button" class="btn btn-secondary" onclick="turnOnOff('{{client.id}}', '1', '0')", {% if offline %} {{ "disabled" }} {% endif %}>
+            Encender <i class="fa fa-power-off"></i>
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="turnOnOff('{{client.id}}', '0', '0')", {% if offline %} {{ "disabled" }} {% endif %}>
+            Apagar <i class="fa fa-power-off"></i>
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="reCheck('{{client.id}}')", {% if offline %} {{ "disabled" }} {% endif %}>
+            <i class="fa fa-refresh"></i>
+        </button>
+        <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#clientConfigModal">
+            <i class="fa fa-gear"></i>
+        </button>
+    </div>
+    <div class="card-body">
+        <p>Cliente: {{ client.name }}</p>
+        <p>Dirección IP: {{client.address}}</p>
+        <p>
+            Screenly-OSE: 
+            <span id="client-{{client.id}}-status" class="badge badge-warning text-light">
+                conectando
+            </span>
+        </p>
+    </div>
+    <div class="btn-group" style="width: 100%;" role="group">
+        <button type="button" class="btn btn-secondary" onclick="controlAsset('{{client.id}}', 'previous')", {% if offline %} {{ "disabled" }} {% endif %}>
+            <i class="fa fa-angle-double-left"></i> Anterior
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="controlAsset('{{client.id}}', 'next')", {% if offline %} {{ "disabled" }} {% endif %}>
+            Siguiente <i class="fa fa-angle-double-right"></i>
+        </button> 
+    </div>
+    <div class="btn-group" style="width: 100%;" role="group">   
+        <a href="/clients/{{client.id}}" class="btn btn-success">
+            Ver <i class="fa fa-eye"></i>
+        </a>     
+        <a href="/clients/edit/{{client.id}}" class="btn btn-warning text-light {% if offline %} {{ 'disabled' }} {% endif %}" {% if offline %} style="pointer-events: none; cursor: default;" {% endif %} >
+            Editar <i class="fa fa-pencil"></i>
+        </a>
+        <button type="button" class="btn btn-danger" onclick="delClient('{{client.id}}')", {% if offline %} {{ "disabled" }} {% endif %}>
+            Eliminar <i class="fa fa-trash-o"></i>
+        </button>
+    </div>
+</div><br>
+
+<!-- Modal -->
+<div class="modal fade" id="clientConfigModal" tabindex="-1" role="dialog" aria-labelledby="clientConfigModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Configuración.</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="client_update_content"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+    function getClientUpdateForm(client_id)
+    {
+        $.get({
+            url: '/clients/update/' + client_id,
+            success: function (data) {
+                $("#client_update_content").html(data);
+            },
+            error: function (error) 
+            {
+                switch(error.status)
+                {
+                    case 408 /*REQUEST TIMEOUT*/:
+                        alertify.error("El servidor está desconectado.");
+                        break;
+
+                    default:
+                        alertify.error("Ha ocurrido un error, para más información consulte los registros de la aplicación.");
+                        break;
+                }
+                console.log(error);
+            }
+        });
+    };
+
+    $(document).ready(function () 
+    {        
+        client_id = "{{ client.id }}";
+        getClientUpdateForm(client_id);
+        
+        check_timer = '{{ client.check_interval }}';
+        cardtimeout = setTimeout(getScreenshot, 0, '{{ client.id }}');
+    });
+</script>
+{% endif %}

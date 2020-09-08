@@ -1,0 +1,27 @@
+<data>
+    <config type="mqtt">
+        <param name="MQTT_CLIENT_ID" value="ScreenlyMQTT" />
+        <param name="MQTT_BROKER_ADDRESS" value="192.168.1.190" />
+        <param name="MQTT_BROKER_PORT" value="8883" />
+        <param name="MQTT_START_ON_LAUNCH" value="0" />
+        <param name="MQTT_PASSWORD_PROTECTED" value="0" />
+        <param name="MQTT_CONNECTION_TIMEOUT" value="30" />
+        <param name="MQTT_KEEP_ALIVE_INTERVAL" value="90" />
+        <param name="MQTT_CLEAN_SESSION" value="0" />
+        <param name="MQTT_AUTO_RECONNECT" value="0" />
+        <param name="MQTT_VERSION" value="3.1.1" />
+        <param name="MQTT_SSL/TLS" value="1" />
+        <param name="MQTT_TLS_PROTOCOL" value="2" />
+        <param name="MQTT_CA_FILE_PATH" value="m2mqtt_ca.crt" />
+        <param name="MQTT_USE_HTTP_PROXY" value="0" />
+        <param name="MQTT_PROXY_HOST" value="" />
+        <param name="MQTT_PROXY_PORT" value="0" />
+    </config>
+
+    <config type="mail">
+        <param name="MAIL_SERVER" value="smtp.googlemail.com" />
+        <param name="MAIL_PORT" value="587" />
+        <param name="MAIL_USE_TLS" value="1" />
+        <param name="MAIL_ADMINS" value="your-email@example.com" />
+    </config>
+</data>

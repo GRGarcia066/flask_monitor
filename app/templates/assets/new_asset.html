@@ -1,0 +1,68 @@
+<!-- new asset.html -->
+{% if form is defined %}
+<form id="asset_form" class="was-validated" action="#" method="post" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div class="modal-body">
+        <div class="form-group">
+            {{ form.category.label }}
+            {{ form.category(class_="form-control selectpicker", style="width: 100%") }}
+            {% for error in form.category.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="custom-file">
+            <input type="file" class="custom-file-input" id="upload" name="upload" required>
+            <label class="custom-file-label" for="upload">Seleccionar archivo...</label>
+            <div class="invalid-feedback">Debes seleccionar un archivo</div>
+            {% for error in form.upload.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </div><br>
+    </div>        
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        {{ form.submit(class_="btn btn-primary") }}
+    </div>
+</form>
+{% endif %}
+
+<script>
+    function OnSubmitAsset(e) 
+    {
+        e.preventDefault(); // block the traditional submission of the form.
+        var formData = new FormData(this);
+
+        $.post({
+            url: "/assets/new/{{ project.id }}",
+            data: formData, // serializes the form's elements.
+            contentType: false,
+            processData: false,      
+            success: function (data) {
+                console.log("Success");
+                window.location.reload();
+            },
+            error: function(data) {
+                console.log("Error");
+                $("#asset_form_content").html(data.responseText);
+            }
+        });
+    };
+
+    $(document).ready(function () 
+    {
+        var form = $("#asset_form")[0];
+        form.onsubmit = OnSubmitAsset;
+
+        $('.selectpicker').select2(
+        {
+            allowClear: true,
+            dropdownParent: $('#CreateAssetModal')
+        });
+
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function() {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    });
+</script>

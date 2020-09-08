@@ -1,0 +1,11 @@
+__pycache__
+.vscode/*
+certs/*
+tools/*
+migrations/*
+app/static/uploads/*
+flask_monitor.egg-info/*
+env/*
+app.db
+test.db
+/logs/mqtt.log

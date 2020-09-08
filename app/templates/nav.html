@@ -1,0 +1,31 @@
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">Screenly Monitor</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+        aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+            {% if current_user.is_anonymous %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('auth.login') }}">Entrar</a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-toggle="modal" data-target="#CreateProjectModal">Nuevo Proyecto</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Administrar
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{{ url_for('mqtt.settings') }}">MQTT</a>
+                    <a class="dropdown-item" href="{{ url_for('auth.profile', username=current_user.username) }}">Perfil</a>
+                    <a class="dropdown-item" href="{{ url_for('auth.register') }}">Registrar usuario</a>
+                    <a class="dropdown-item" href="{{ url_for('auth.logout') }}">Salir</a>
+                </div>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav><br>

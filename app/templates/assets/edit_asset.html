@@ -1,0 +1,75 @@
+<!-- edit_asset.html -->
+{% extends 'project_layout.html' %}
+
+{% block content %}
+{% if form is defined and asset is defined %}
+<div class="container">
+    <div class="col-8 offset-2">
+        <h3 style="text-align: center;">Editar Asset</h3><br>
+        <form action="" method="post" enctype="multipart/form-data">  
+            <div class="form-row">
+                <div class="col">
+                    {{ form.startdate.label(class_="form-control") }}
+                </div>
+                <div class="col">
+                    {{ form.startdate(class_="form-control", type="Date", value=(asset.start_date | Date)) }}
+                    {% for error in form.startdate.errors %}
+                    <span style="color: red;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col">
+                    {{ form.starttime(class_="form-control", type="Time", value=(asset.start_date | Time)) }}
+                    {% for error in form.starttime.errors %}
+                    <span style="color: red;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div><br>
+        
+            <div class="form-row">
+                <div class="col">
+                    {{ form.enddate.label(class_="form-control") }}
+                </div>
+                <div class="col">
+                    {{ form.enddate(class_="form-control", type="Date", value=(asset.end_date | Date)) }}
+                    {% for error in form.enddate.errors %}
+                    <span style="color: red;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col">
+                    {{ form.endtime(class_="form-control", type="Time", value=(asset.end_date | Time)) }}
+                    {% for error in form.endtime.errors %}
+                    <span style="color: red;">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            </div><br>
+        
+            <div class="form-row">
+                <div class="col-4">
+                    {{ form.duration.label(class_="form-control") }}<br>
+                </div>
+                <div class="col-8">
+                    {% if asset.duration %}
+                    {{ form.duration(class_="form-control", value=asset.duration) }}
+                    {% else %}
+                    {{ form.duration(class_="form-control", disabled=1, value='Video') }}
+                    {% endif %}
+                </div>
+                {% for error in form.duration.errors %}
+                <span style="color: red;">{{ error }}</span>
+                {% endfor %}
+            </div>
+        
+            {{ form.csrf_token() }}
+            {{ form.mimetype(value=asset.mimetype) }}
+            {{ form.is_enabled(value=asset.is_enabled) }}
+            {{ form.name(value=asset.name) }}
+            {{ form.play_order(value=asset.play_order) }}
+            {{ form.nocache(value=asset.nocache) }}
+            {{ form.uri(value=asset.uri) }}
+            {{ form.skip_asset_check(value=asset.skip_asset_check) }}
+            {{ form.submit(class_="btn btn-block btn-primary") }}</i>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

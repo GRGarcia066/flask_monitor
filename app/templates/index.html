@@ -1,0 +1,41 @@
+<!-- index.html -->
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% if projects is defined and projects | length > 0 %}
+        <!-- Nothing here -->
+        {% else %}
+        <div class="jumbotron border border-secondary bg-dark text-light">
+            <h1 class="display-4">Hola, bienvenido a Screenly OSE Monitor</h1><br>
+            <p class="lead text-light bg-dark">
+                Con Screenly OSE Monitoring puedes configurar un número ilimitado de reproductores y administrarlos en una sola pantalla.
+                Para empezar a usar la aplicación debe crear un nuevo proyecto.
+            </p><br>
+            <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#CreateProjectModal">
+                <strong>Crear nuevo proyecto</strong>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Create Project Modal -->
+<div class="modal fade" id="CreateProjectModal" tabindex="-1" role="dialog" aria-labelledby="CreateProjectModalTitle" aria-hidden="true">
+    <div id="project-form" class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Crear nuevo proyecto.</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div id="project_form_content"></div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/projects/projects.js') }}"></script>
+
+{% endblock %}

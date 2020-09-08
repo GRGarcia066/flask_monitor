@@ -1,0 +1,84 @@
+<!-- update_client.html -->
+{% if form is defined and client is defined %}
+<form id="client_update_form" action="#">   
+  <div class="modal-body">
+      <div class="container">
+        {{ form.id(value=client.id) }}
+        <div class="form-group row">
+            {{ form.name.label(class_="col-5") }}<br>
+            {{ form.name(class_="form-control col-7", value=client.name) }}
+            {% for error in form.name.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="form-group row">
+            {{ form.address.label(class_="col-5") }}<br>
+            {{ form.address(class_="form-control col-7", value=client.address) }}
+            {% for error in form.address.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="form-group row">
+            {{ form.check_interval.label(class_="col-5") }}<br>
+            {{ form.check_interval(class_="form-control col-7", value=client.check_interval // 1000) }}
+            {% for error in form.check_interval.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="form-group row">
+            {{ form.username.label(class_="col-5") }}<br>
+            {{ form.username(class_="form-control col-7", value=client.username) }}
+            {% for error in form.username.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="form-group row">
+            {{ form.oldpassword.label(class_="col-5") }}<br>
+            {{ form.oldpassword(class_="form-control col-7") }}
+            {% for error in form.oldpassword.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </div>
+        <div class="form-group row">
+            {{ form.password.label(class_="col-5") }}<br>
+            {{ form.password(class_="form-control col-7") }}
+            {% for error in form.password.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </div>
+      </div>
+  </div>
+  <div class="modal-footer">
+      <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="shutdownScreenly('{{ client.id }}')">Apagar</button>
+      <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="rebootScreenly('{{ client.id }}')">Reiniciar</button>
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+      {{ form.submit(class_="btn btn-primary") }}
+  </div>
+</form>
+{% endif %}
+
+<script>
+    function OnSubmitClient(e) 
+    {
+        $.post({
+            url: "/clients/update/{{ client.id }}",
+            data: $(this).serialize(), // serializes the form's elements.
+        
+            success: function (data) {
+                console.log("Success");
+                window.location.reload();
+            },
+            error: function(data) {
+                console.log("Error");
+                $("#client_update_content").html(data.responseText);
+            }
+        });
+        e.preventDefault(); // block the traditional submission of the form.
+    };
+
+    $(document).ready(function () 
+    {
+        var form = $("#client_update_form")[0];
+        form.onsubmit = OnSubmitClient;
+    });
+</script>

@@ -1,0 +1,97 @@
+<!-- category.html -->
+{% extends 'project_layout.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    {% if category is defined %}
+    <div class="row">
+        <div class="col-md-3 col-xs-12">
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-header">{{ category.name }}</div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item text-white bg-dark">
+                            Proyecto:
+                            <a href="/projects/{{ category.project.name }}" style="color: white;"> 
+                                 {{ category.project.name }}
+                            </a>
+                        </li>
+                        <li class="list-group-item text-white bg-dark">
+                            Assets: 
+                        <span class="badge badge-primary badge-pill">
+                            {{ category.assets | length }}
+                        </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <a href="/projects/{{ category.project.name }}" class="btn btn-primary">
+                        <strong>Volver</strong>
+                    </a>
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#UpdateCategoryModal">
+                        <strong>Editar</strong>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9 col-xs-12">
+            {% if category.assets is defined and category.assets | length %}
+            <div class="row">
+                {% for asset in category.assets %}
+                <div class="card" style="max-height: 20em; max-width: 20em; padding: 8px;">
+                    {% if asset.is_image() %}
+                    <img class="card-img-top" src="{{url_for('static', filename='uploads/'+asset.filename)}}"  style="width: 100%; height: 100%;" alt="Card image cap"/>
+                    {% elif asset.is_video() %}
+                    <video style="width: 100%; height: 100%;" controls>
+                        <source src="{{url_for('static', filename='uploads/'+asset.filename)}}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    {% endif %}  
+                </div>
+                {% endfor %} 
+            </div>  
+            {% else %}
+            <h5 class="card-title">No hay assets en esta categoría</h5>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Update Category Modal -->
+<div class="modal fade" id="UpdateCategoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div id="category-form" class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Editar categoría.</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div id="cat_form_content"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function getCategoryForm(category_form)
+    {
+        $.get({
+            url: '/categories/edit/{{ category.id }}',
+            success: function (data) {
+                $(category_form).html(data);
+            },
+            error: function (error) {
+                alertify.error("El servidor está desconectado.")
+                console.log(error)
+            }
+        });
+    };
+
+    $(document).ready(function () 
+    {
+        getCategoryForm("#cat_form_content");
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,24 @@
+<table class="table table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Padre</th>
+            <th>Opciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for topic in topics %}        
+        <tr>
+            <td>{{ topic.id }}</td>
+            <td>{{ topic.name }}</td>
+            <td>{{ topic.parent.name }}</td>
+            <td>
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-danger" onclick="delTopic({{ topic.id }})"><i class="fa fa-trash-o"></i></button>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

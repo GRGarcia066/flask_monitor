@@ -1,0 +1,165 @@
+<!-- project.html -->
+{% extends 'project_layout.html' %}
+
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/project.css') }}">
+<!--===============================================================================================-->
+
+<div class="container">
+    {% if project is defined %}
+    <div class="row" style="margin-left: -25px; margin-right: -25px;">
+        <div class="col">
+            <div class="card text-white bg-dark mb-3" style="width: 22rem; min-height: 20rem;">
+                <div class="card-header">Clientes</div>
+                <div class="card-body">
+                    {% if project.clients is defined and project.clients | length > 0  %}
+                        <ul class="list-group list-group-flush">
+                        {% for client in project.clients %}
+                            <li class="list-group-item text-white bg-dark">
+                            <a href="/clients/{{ client.id }}" style="color: white;">{{ client.name }}:</a>
+                            <span class="badge badge-primary badge-pill">
+                                {{ client.address }}
+                            </span>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                    <h5 class="card-title">No hay clientes en este proyecto</h5>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#CreateClientModal">
+                        <strong>Agregar Cliente</strong>
+                    </button>
+                 </div>
+            </div>
+        </div>
+    
+        <div class="col">
+            <div class="card text-white bg-dark mb-3" style="width: 22rem; min-height: 20rem;">
+                <div class="card-header">Assets</div>
+                <div class="card-body">
+                    {% if project.categories is defined and project.categories | length > 0  %}
+                        <ul class="list-group list-group-flush">
+                        {% for category in project.categories %}
+                            <li class="list-group-item text-white bg-dark">
+                                <a href="/categories/{{ category.id }}" style="color: white;">{{ category.name }}:</a>                      
+                                <span class="badge badge-primary badge-pill">
+                                    {{ category.assets | length }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                    <h5 class="card-title">No hay categorías en este proyecto</h5>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <div class="btn-group mr-2" role="group">
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#CreateAssetModal">
+                            <strong>Crear Asset</strong>
+                        </button>
+                    </div>
+                    <div class="btn-group mr-2" role="group">
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#CreateCategoryModal">
+                            <strong>Crear Categoría</strong>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="col">
+            <div class="card text-white bg-dark mb-3" style="width: 22rem; min-height: 20rem;">
+                <div class="card-header">Suscripciones</div>
+                <div class="card-body">                 
+                    {% if project.subscriptions is defined and project.subscriptions | length > 0  %}
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item text-white bg-dark">
+                            <a href="/projects/{{ project.name }}/subscriptions" style="color: white;">Total:</a>
+                            <span class="badge badge-primary badge-pill">
+                                {{ project.subscriptions | length }}
+                            </span>
+                        </li>
+                    </ul>
+                    {% else %}
+                    <h5 class="card-title">No hay suscripciones en este proyecto</h5>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <div class="btn-group mr-2" role="group">
+                        <a class="btn btn-primary" href="/subscriptions/new/{{ project.id }}">
+                            <strong>Crear Suscripción</strong>
+                        </a>
+                    </div>
+                    <div class="btn-group mr-2" role="group">
+                        <a class="btn btn-primary" href="/projects/{{ project.name }}/topics">
+                            <strong>Crear Tópicos</strong>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Create Client Modal -->
+<div class="modal fade" id="CreateClientModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div id="client-form" class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Agregar cliente.</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div id="client_form_content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Category Modal -->
+<div class="modal fade" id="CreateCategoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div id="category-form" class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Crear nueva categoría.</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div id="cat_form_content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Asset Modal -->
+<div class="modal fade" id="CreateAssetModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div id="asset-form" class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLongTitle">Crear nuevo asset.</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div id="asset_form_content"></div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/projects/project.js') }}"></script>
+
+<script>
+    $(document).ready(function () 
+    {
+        project_id = "{{ project.id }}"
+        getCategoryForm(project_id, "#cat_form_content");
+        getClientForm(project_id, "#client_form_content");
+        getAssetForm(project_id, "#asset_form_content");
+    });
+</script>
+
+{% endblock %}

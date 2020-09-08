@@ -1,0 +1,44 @@
+<!-- asset.html -->
+{% extends 'project_layout.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        {% if asset is defined %}
+        <div class="col-md-3 col-xs-12">
+            <div class="card mb-3 border-secondary bg-dark text-light">
+                <div class="card-header">
+                    <strong>Categorías</strong>
+                </div>
+                <div class="card-body">
+                    {% if asset.categories is defined %}
+                    <div class="list-group"></div>
+                    {% for category in asset.categories %}
+                        <a href="/categories/{{ category.id }}" class="list-group-item list-group-item-action bg-dark text-light">{{ category.name }}</a>
+                    {% endfor %}
+                    <div class="list-group"></div>                 
+                    {% endif %} <br>  
+                </div>
+                <div class="card-footer">
+                    <button type="button" class="btn btn-danger" onclick="delAsset('{{ asset.id }}')">Eliminar</button>  
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9 col-xs-12">
+            <div class="card">
+                <div class="card-body">
+                    {% if asset.is_image() %}
+                    <img class="card-img-top" src="{{url_for('static', filename='uploads/'+asset.filename)}}"  style="width: 100%; height: auto;" alt="Card image cap"/>
+                    {% elif asset.is_video() %}
+                    <video style="width: 100%; height: auto;" controls>
+                        <source src="{{url_for('static', filename='uploads/'+asset.filename)}}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    {% endif %}    
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

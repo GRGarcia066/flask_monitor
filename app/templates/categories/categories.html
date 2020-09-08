@@ -1,0 +1,37 @@
+<!-- categories.html -->
+{% extends 'project_layout.html' %}
+
+{% block content %}
+<div class="container">
+    {% if project is defined %}
+        {% for category in project.categories %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{category.name}}</h5>
+                <p class="card-text">Assets: {{category.assets|count}}</p>
+
+                <button type="button" class="btn btn-danger" onclick="delCategory({{category.id}})">Eliminar</button>
+                <a href="/categories/{{category.id}}" class="btn btn-success">Ver</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<script>  
+    function delCategory(id) {
+        $.ajax({
+            url: '/categories/'+ id,
+            type: 'DELETE',
+            success: function (data) {
+                window.location.reload();
+            },
+            error: function (error) {
+                console.log(error);
+                alert('Error')
+            }
+        });
+    }
+</script>
+
+{% endblock %}
