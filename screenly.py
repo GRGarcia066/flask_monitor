@@ -4,7 +4,6 @@ from config import Config
 import logging, os
 
 
-logging.basicConfig(level=logging.DEBUG)
 if not os.path.exists('certs'):
     os.mkdir('certs')
 
@@ -32,8 +31,8 @@ def make_shell_context():
     return {'db': db, 'Client': Client, 'Asset': Asset, 'Category': Category}
 
 
-if not os.path.exists(Config.SERVER_CERT_PATH) or not os.path.exists(Config.SERVER_KEY_PATH):
-    myapp.run(debug=Config.DEBUG, use_reloader=False, host='0.0.0.0', port='5000')
+if not Config.SECURE_CONNECTION or not os.path.exists(Config.SERVER_CERT_PATH) or not os.path.exists(Config.SERVER_KEY_PATH):
+    myapp.run(debug=Config.DEBUG, use_reloader=Config.USE_RELOADER, host='0.0.0.0', port='5000')
 else:
     ssl_context = (Config.SERVER_CERT_PATH, Config.SERVER_KEY_PATH)
-    myapp.run(ssl_context=ssl_context, debug=Config.DEBUG, use_reloader=False, host='0.0.0.0', port='5000')
+    myapp.run(ssl_context=ssl_context, debug=Config.DEBUG, use_reloader=Config.USE_RELOADER, host='0.0.0.0', port='5000')
