@@ -45,7 +45,7 @@
                                                 {% endfor %}
                                             </div><br>
                                             <div class="custom-control custom-switch">
-                                                <input id="protected" type="checkbox" class="custom-control-input" data-toggle="modal" data-target="#CredentialsModal">
+                                                <input type="checkbox" class="custom-control-input" {% if mqtt_settings["MQTT_PASSWORD_PROTECTED"]=="1" %} checked {% endif %}>
                                                 <label for="protected" class="custom-control-label">Protegido con contraseña</label>
                                             </div><br>
                                             <div class="custom-control custom-switch">
@@ -85,8 +85,11 @@
                                         {{ form.secure.label(class_="custom-control-label") }}
                                     </div><br>
                                     <div class="form-group row">
-                                        {{ form.tls_protocol.label(class_="col-9", style="max-width: 9em;") }}
-                                        {{ form.tls_protocol(class_="form-control col-3", value=mqtt_settings["MQTT_TLS_PROTOCOL"]) }}
+                                        {{ form.tls_protocol.label(class_="col-9", style="max-width: 9em;") }}                                      
+                                        <select class="form-control col-3" id="tls_protocol" name="tls_protocol">
+                                            <option value="2" {% if mqtt_settings["MQTT_TLS_PROTOCOL"] == "2" %} selected {% endif %}>v1.2</option>
+                                            <option value="3" {% if mqtt_settings["MQTT_TLS_PROTOCOL"] == "3" %} selected {% endif %}>v1.3</option>
+                                        </select>
                                     </div><br>
                                     <div class="custom-file">
                                         {{ form.ca_file_path(class_="custom-file-input")}}
@@ -103,6 +106,9 @@
                         </button>
                         <button type="button" class="btn btn-primary" onclick="ActivateMQTT(0)">
                             <strong>Desconectar</strong>
+                        </button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CredentialsModal" >
+                            <strong>Credenciales</strong>
                         </button>
                         <button type="submit" class="btn btn-primary" style="position: relative; float: right;">
                             <strong>Aplicar</strong>

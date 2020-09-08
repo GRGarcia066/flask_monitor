@@ -142,6 +142,7 @@ class ScreenlyMQTTClient(mqtt.Client):
             name = elem.get('name')
             value = elem.get('value')
             app.config[name] = value
+        app.config['MQTT_PASSWORD_PROTECTED'] = "0"
         self.__update_settings(app)
 
 

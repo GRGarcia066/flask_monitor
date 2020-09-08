@@ -4,7 +4,6 @@
         <param name="MQTT_BROKER_ADDRESS" value="192.168.1.190" />
         <param name="MQTT_BROKER_PORT" value="8883" />
         <param name="MQTT_START_ON_LAUNCH" value="0" />
-        <param name="MQTT_PASSWORD_PROTECTED" value="0" />
         <param name="MQTT_CONNECTION_TIMEOUT" value="30" />
         <param name="MQTT_KEEP_ALIVE_INTERVAL" value="90" />
         <param name="MQTT_CLEAN_SESSION" value="0" />

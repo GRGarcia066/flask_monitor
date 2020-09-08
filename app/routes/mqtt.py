@@ -64,6 +64,7 @@ def credentials():
         password = form.password.data
         try:
             mqtt_client.username_pw_set(username=username,password=password)
+            app.config['MQTT_PASSWORD_PROTECTED'] = "1"
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
